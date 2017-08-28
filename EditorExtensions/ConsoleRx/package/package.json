@@ -1,0 +1,42 @@
+{
+	"name": "consolerx",
+	"version": "1.0.0",
+	"description": "Custom Type Console",
+	"author": "RazgrizHsu <fly@raz.tw>",
+	"main": "index.js",
+	"main-menu":
+	{
+		"i18n:MAIN_MENU.panel.title/ConsoleRx":
+		{
+			"icon": "icon.png",
+			"accelerator": "CmdOrCtrl+9",
+			"message": "consolerx:open"
+		}
+	},
+	"panel":
+	{
+		"main": "panel/consolerx.js",
+		"popable": true,
+		"type": "dockable",
+		"title": "i18n:ConsoleRx",
+		"icon": "icon.png",
+		"width": 600,
+		"height": 350,
+		"min-width": 465,
+		"min-height": 300,
+		"shortcuts":
+		{
+			"command+k": "clear",
+			"ctrl+k": "clear"
+		},
+		"profiles":
+		{
+			"project":
+			{
+				"fontsize": 11,
+				"lineheight": 26,
+				"fontfamilies": "Monaco"
+			}
+		}
+	}
+}
