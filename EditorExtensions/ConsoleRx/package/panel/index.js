@@ -1,11 +1,22 @@
 'use strict';
-const defines = require( Editor.url( 'packages://consolerx/defines' ) );
+const crx = require( Editor.url( 'packages://consolerx/crx' ) );
 const manager = require( Editor.url( 'packages://consolerx/panel/manager' ) );
 const components =
 {
-	List:	require( Editor.url( 'packages://consolerx/panel/components/list' ) ),
-	Item:	require( Editor.url( 'packages://consolerx/panel/components/item' ) ),
+	List:			require( Editor.url( 'packages://consolerx/panel/components/list' ) ),
+	Item:			require( Editor.url( 'packages://consolerx/panel/components/item' ) ),
 };
+
+require( Editor.url( 'packages://consolerx/libs/string-format' ) ).extend( String.prototype );
+
+const __defaultColors = `
+section .item[type=log]	{ color: #999; }
+section .item[type=error] { color: #DA2121; }
+section .item[type=warn] { color: #990; }
+section .item[type=info] { color: #09F; }
+section .item[type=failed] { color: #DA2121; }
+section .item[type=success] { color: #090; }
+`;
 
 const stylesheet = `
 @import url('app://bower_components/fontawesome/css/font-awesome.min.css');
@@ -19,12 +30,7 @@ section .item { color: #999; line-height: 30px; padding: 0 10px; box-sizing: bor
 section .item[fold] { overflow-x: hidden; }
 section .item[texture=light] { background-color: #292929; }
 section .item[texture=dark] { background-color: #222; }
-section .item[type=log]	{ color: #999; }
-section .item[type=error] { color: #DA2121; }
-section .item[type=warn] { color: #990; }
-section .item[type=info] { color: #09F; }
-section .item[type=failed] { color: #DA2121; }
-section .item[type=success] { color: #090; }
+
 section .item i { }
 section .item i.fold { color: #555; cursor: pointer; padding: 2px; }
 section .item i.fa-caret-right { padding: 2px 5px 2px 6px; margin: 0 -2px; }
@@ -47,6 +53,9 @@ label { line-height:23px; font-size:9px; font-family:Monaco; }
 #consolerx input:hover { border: 1px solid #bababa; }
 #consolerx input:-webkit-input-placeholder { font-style: italic; color: #595959 }
 #consolerx .fa { font-size:18px; line-height:24px; margin:0px 5px 0px 6px; }
+
+/* Change for UI Kit */
+ui-color { width:30px; }
 `;
 
 const uiTemplate =`
@@ -72,115 +81,117 @@ const uiTemplate =`
 	<header>
 		<!--<i class="split">&lt;!&ndash;split line&ndash;&gt;</i>-->
 		<!--------------------------------------------------------------------------------------------------------------->
-		<i class="fa fa-text-width"></i>
-		<ui-select id="crx_FontSize" v-on:confirm="onFontSizeChanged" v-value="fontsize">
+		<i class="fa fa-text-width" title="Font Size"></i>
+		<ui-select id="crx_FontSize" v-on:confirm="onFontSizeChanged" v-value="fontsize" title="Font Size">
 			<option v-for="number in SizesOfFont" value="{{ number }}">{{ number }}</option>
 		</ui-select>
 		
-		<i class="fa fa-arrows-v"></i>
-		<ui-select id="crx_LineHeight" v-on:confirm="onLineHeightChanged" v-value="lineheight">
+		<i class="fa fa-arrows-v" title="Line Height"></i>
+		<ui-select id="crx_LineHeight" v-on:confirm="onLineHeightChanged" v-value="lineheight" title="Line Height">
 			<option v-for="number in SizesOfLine" value="{{ number }}">{{ number }}</option>
 		</ui-select>
 		 
-		<i class="fa fa-font"></i>
-		<input id="crx_FontFamilies" v-model="fontfamilies" v-on:change="onFontFamiliesChanged" style="width:130px" />
+		<i class="fa fa-font" title="Font Names ex: Arial,Tahoma"></i>
+		<input id="crx_FontFamilies" v-model="fontfamilies" v-on:change="onFontFamiliesChanged" style="width:130px" title="Font Names ex: Arial,Tahoma" />
 		
+		<i class="fa fa-cogs" style="margin-left:10px"></i>
+		<div class="group">
+			<ui-color id="log" v-bind:value="colors.log" v-on:change="onColorChanged" title="Color of Log"></ui-color>
+			<ui-color id="error" v-bind:value="colors.error" v-on:change="onColorChanged" title="Color of Error"></ui-color>
+			<ui-color id="warn" v-bind:value="colors.warn" v-on:change="onColorChanged" title="Color of Warn"></ui-color>
+			<ui-color id="info" v-bind:value="colors.info" v-on:change="onColorChanged" title="Color of Info"></ui-color>
+			<ui-color id="failed" v-bind:value="colors.failed" v-on:change="onColorChanged" title="Color of Failed"></ui-color>
+			<ui-color id="success" v-bind:value="colors.success" v-on:change="onColorChanged" title="Color of Success"></ui-color>
+		</div>
 		<!--------------------------------------------------------------------------------------------------------------->
 	</header>
 	
 	
 	<style type="text/css">
-		.text span{ font-size: {{ fontsize }}px!important; font-family: {{ fontfamilies }}; }
-		section .item { line-height: {{ lineheight }}px!important; }
+	
+		.text span		{ font-size: {{ fontsize }}px!important; font-family: {{ fontfamilies }}; }
+		section .item	{ line-height: {{ lineheight }}px!important; }
+		
+		section .item[type=log]		{ color: {{ colors.log }}!important; }
+		section .item[type=error]	{ color: {{ colors.error }}!important; }
+		section .item[type=warn]	{ color: {{ colors.warn }}!important; }
+		section .item[type=info]	{ color: {{ colors.info }}!important; }
+		section .item[type=failed]	{ color: {{ colors.failed }}!important; }
+		section .item[type=success]	{ color: {{ colors.success }}!important; }
+		
 	</style>
 	
 	<consolerx-list v-bind:messages="messages"></consolerx-list>
 </div>
 `;
 
-
-//Push runtime data to Editor.ConsoleEx.data
 let _data =
 {
 	messages:		[],
-	fontsize:		11,
-	lineheight:		28,
-	fontfamilies:	'Monaco, Droid Sans',
-
 	SizesOfFont:	[],
 	SizesOfLine:	[],
+
+	fontsize:		crx.DefaultProfiles.fontsize,
+	lineheight:		crx.DefaultProfiles.lineheight,
+	fontfamilies:	crx.DefaultProfiles.fontfamilies,
+	colors:			crx.DefaultProfiles.colors,
 };
 
-
-if( !Editor.ConsoleEx ) Editor.ConsoleEx =
-{
-	LineHeight:	28,
-	CalculateNeedAddLineHeightBy( item )
-	{
-		return ( item.fold ) ? this.LineHeight : item.rows * 26 + 14;
-		//cc.log( 'Editor: fontSize:' + this.data.fontsize );
-	},
-	CalculateMultiLineHeightBy( source )
-	{
-		return source.rows * 26 + 14 - this.LineHeight;
-	},
-	_ProcessProfileBy( profile )
-	{
-
-		_data.fontsize		= defines.GetValidNumberBy( profile, 'fontsize', 11 );
-		_data.lineheight	= defines.GetValidNumberBy( profile, 'lineheight', 26 );
-		_data.fontfamilies	= defines.GetValidStringBy( profile, 'fontfamilies', 'Monaco' );
-
-		Editor.ConsoleEx.LineHeight = _data.lineheight;
-	},
-};
-
+//Push runtime data to Editor.crx.data
+if( !Editor.crx ) Editor.crx = crx;
 
 //push options
 for( let idx = 8; idx <= 20; idx++ ) { _data.SizesOfFont.push( idx ); }
 for( let idx = 18; idx <= 36; idx++ ) { _data.SizesOfLine.push( idx ); }
 
+
 let _buildMethods = ( runtime ) =>
 {
-	let profile = runtime.profiles.project;
 	//Editor.log( '[ConsoleRx] profile:' + JSON.stringify( profile.data ) );
 
 	let methods =
 	{
-		onClear(){ Editor.Ipc.sendToMain( defines.keys.cmds.Clear, '^(?!.*?SyntaxError)', true ); },
+		onClear(){ Editor.Ipc.sendToMain( crx.keys.cmds.Clear, '^(?!.*?SyntaxError)', true ); },
 		onPopup()
 		{
 			let rect = runtime.$openLogBtn.getBoundingClientRect();
-			Editor.Ipc.sendToPackage( defines.PackageName, 'popup-open-log-menu', rect.left, rect.bottom + 5 );
+			Editor.Ipc.sendToPackage( crx.PackageName, 'popup-open-log-menu', rect.left, rect.bottom + 5 );
 		},
-		onFilterType( event ) { manager.setFilterType( event.target.value ); },
-		onCollapse( event ) { manager.setCollapse( event.target.checked ); },
-		onFilterRegex( event ) { manager.setFilterRegex( event.target.value ); },
-		onFilterText( event ) { manager.setFilterText( event.target.value ); },
+		onFilterType( event )		{ manager.setFilterType( event.target.value ); },
+		onCollapse( event )			{ manager.setCollapse( event.target.checked ); },
+		onFilterRegex( event )		{ manager.setFilterRegex( event.target.value ); },
+		onFilterText( event )		{ manager.setFilterText( event.target.value ); },
 		onFontSizeChanged( event )
 		{
 			let value	= event.target.value;
 			let size	=  parseInt( value );
-			profile.data['fontsize'] = parseInt( size );
-			profile.save();
+
+			crx.Runtime.UpdateProfileBy( 'fontsize',size );
 		},
 		onLineHeightChanged( event )
 		{
 			let value	= event.target.value;
 			let size	=  parseInt( value );
 
-			profile.data['lineheight'] = size;
-			profile.save();
-			Editor.ConsoleEx.LineHeight = size;
+			crx.Runtime.UpdateProfileBy( 'lineheight', size );
+			crx.Runtime.LineHeight = size;
 			manager.update();
 		},
 		onFontFamiliesChanged( event )
 		{
-			let fonts = event.target.value;
-			profile.data['fontfamilies'] = fonts;
-			profile.save();
+			let fonts = event.target.value
 
+			crx.Runtime.UpdateProfileBy( 'fontfamilies', fonts );
 			//manager.update();
+		},
+		onColorChanged: function ( event )
+		{
+			let picker	= event.target;
+			let hex		= crx.RgbaArrayToHexBy( picker.value );
+			console.info( 'OnUpdateColor: Id[{0}] Rgba[{1}]'.format( picker.id, hex ) );
+
+			this.colors[picker.id] = hex;
+			crx.Runtime.UpdateProfileBy( 'colors', this.colors );
 		},
 	};
 	return methods;
@@ -235,7 +246,6 @@ const _DefineOfPanel =
 
 		'consolerx:query-last-error-log'( event )
 		{
-			Editor.log( '[ConsoleEx] query last error!' );
 			if ( !event.reply ) return;
 
 			let list = manager.list;
@@ -262,24 +272,27 @@ const _DefineOfPanel =
 			methods: _buildMethods( this ),
 		};
 
-		let profile = this.profiles.project;
-		Editor.ConsoleEx._ProcessProfileBy( profile );
+		//Initialize crx profile and validate buildVue.data
+		crx.InitializeProfileBy( this.profiles.project, buildVue.data );
 
-		//New Vue
 		this._vm = new Vue( buildVue );
-
 
 		// 将显示的数组设置进Manager
 		// manager可以直接修改这个数组，更新数据
 		manager.setRenderCmds( this._vm.messages );
 
-		Editor.Ipc.sendToMain( defines.keys.editor.ConsoleQuery, ( err, results ) =>{ manager.addItems( results ); } );
+		Editor.Ipc.sendToMain( crx.keys.editor.ConsoleQuery, ( err, results ) =>{ manager.addItems( results ); } );
+
+		Editor.info( 'Test Warn Log' );
+		Editor.error( 'Test Error Log' );
+		Editor.warn( 'Test Warn Log' );
+		Editor.success( 'Test Success Log' );
 	},
 
 	clear()
 	{
 		manager.clear();
-		Editor.Ipc.sendToMain( defines.keys.cmds.Clear );
+		Editor.Ipc.sendToMain( crx.keys.cmds.Clear );
 	}
 
 };

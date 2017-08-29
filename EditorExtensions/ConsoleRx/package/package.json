@@ -1,7 +1,7 @@
 {
 	"name": "consolerx",
-	"version": "1.0.0",
-	"description": "Custom Type Console",
+	"version": "1.1.0",
+	"description": "Custom Your Console Output Styles",
 	"author": "RazgrizHsu <fly@raz.tw>",
 	"main": "index.js",
 	"main-menu":
@@ -15,7 +15,7 @@
 	},
 	"panel":
 	{
-		"main": "panel/consolerx.js",
+		"main": "panel/index.js",
 		"popable": true,
 		"type": "dockable",
 		"title": "i18n:ConsoleRx",
@@ -35,7 +35,17 @@
 			{
 				"fontsize": 11,
 				"lineheight": 26,
-				"fontfamilies": "Monaco"
+				"fontfamilies": "Monaco",
+
+				"colors":
+				{
+					"log":		"#999999",
+					"error":	"#DA2121",
+					"warn":		"#999900",
+					"info":		"#0099FF",
+					"failed":	"#DA2121",
+					"success":	"#009900"
+				}
 			}
 		}
 	}

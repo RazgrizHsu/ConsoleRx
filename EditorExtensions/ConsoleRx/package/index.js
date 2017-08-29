@@ -2,7 +2,7 @@
 const Electron = require( 'electron' );
 const Clipboard = Electron.clipboard;
 
-const defines = require( './defines' );
+const crx = require( './crx' );
 
 let index =
 {
@@ -10,14 +10,14 @@ let index =
 	{
 		Editor.Menu.register
 		(
-			defines.keys.OpenLogFile,
-			() => { return defines.OpenLogFileOptions; },
+			crx.keys.OpenLogFile,
+			() => { return crx.OpenLogFileOptions; },
 			true
 		);
 	},
 	unload()
 	{
-		Editor.Menu.unregister( defines.keys.OpenLogFile );
+		Editor.Menu.unregister( crx.keys.OpenLogFile );
 	},
 	messages: {}
 };
@@ -25,21 +25,21 @@ let index =
 //------------------------------------------------------------------------------
 // setting messages
 //------------------------------------------------------------------------------
-index.messages[ defines.keys.msgs.Open ] = () =>
+index.messages[ crx.keys.msgs.Open ] = () =>
 {
-	Editor.Panel.open( defines.PackageName );
+	Editor.Panel.open( crx.PackageName );
 };
-index.messages[ defines.keys.msgs.OpenLogFile ] = () =>
+index.messages[ crx.keys.msgs.OpenLogFile ] = () =>
 {
 	Electron.shell.openItem( Editor.logfile );
 };
 
-index.messages[ defines.keys.cmds.Clear ] = ( event, pattern, useRegex ) =>
+index.messages[ crx.keys.cmds.Clear ] = ( event, pattern, useRegex ) =>
 {
 	Editor.clearLog( pattern, useRegex );
 };
 
-index.messages[ defines.keys.msgs.PopupLogMenu ] = ( event, x, y ) =>
+index.messages[ crx.keys.msgs.PopupLogMenu ] = ( event, x, y ) =>
 {
 	let menuTmpl = Editor.Menu.getMenu( 'open-log-file' );
 
@@ -50,7 +50,7 @@ index.messages[ defines.keys.msgs.PopupLogMenu ] = ( event, x, y ) =>
 	editorMenu.dispose();
 };
 
-index.messages[ defines.keys.msgs.PopupItemMenu ] = ( event, x, y, text ) =>
+index.messages[ crx.keys.msgs.PopupItemMenu ] = ( event, x, y, text ) =>
 {
 	var menuTmpl =
 	[

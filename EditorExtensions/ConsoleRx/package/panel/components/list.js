@@ -13,7 +13,7 @@ var scrollNumCache = null;
 var _calculateHeight = function ( list )
 {
 	var height = 0;
-	list.forEach( (item) => { height += Editor.ConsoleEx.CalculateNeedAddLineHeightBy( item ); } )
+	list.forEach( (item) => { height += Editor.crx.CalculateNeedAddLineHeightBy( item ); } )
 	return height;
 };
 
@@ -66,7 +66,7 @@ let _methods =
 		var index = 0;
 		list.some( ( item, i ) =>
 		{
-			tmp += Editor.ConsoleEx.CalculateNeedAddLineHeightBy( item );
+			tmp += Editor.crx.CalculateNeedAddLineHeightBy( item );
 
 			if ( tmp > scroll )
 			{
@@ -110,7 +110,7 @@ let _methods =
 
 		var source = this.messages[index++];
 		source.fold = fold;
-		var offsetY = Editor.ConsoleEx.CalculateMultiLineHeightBy( source );
+		var offsetY = Editor.crx.CalculateMultiLineHeightBy( source );
 		if ( fold )
 		{
 			offsetY = -offsetY;
@@ -138,7 +138,7 @@ let _directives =
 		this.vm.sectionStyle.height = height;
 
 		// 当前显示高度可以显示多少条信息
-		var num = this.vm.$el.clientHeight / Editor.ConsoleEx.LineHeight + 3 | 0;
+		var num = this.vm.$el.clientHeight / Editor.crx.Runtime.LineHeight + 3 | 0;
 
 		// 生成 list 数组
 		var dataList = this.vm.list;
@@ -161,7 +161,7 @@ let _directives =
 			scrollNumCache = list.length;
 
 			var scroll;
-			if ( ts !== 0 && height - tc - ts > Editor.ConsoleEx.LineHeight * cn )
+			if ( ts !== 0 && height - tc - ts > Editor.crx.Runtime.LineHeight * cn )
 			{
 				scroll = this.vm.$el.scrollTop;
 			}
@@ -174,7 +174,7 @@ let _directives =
 			var index = 0;
 			list.some( ( item, i ) =>
 			{
-				tmp += Editor.ConsoleEx.CalculateNeedAddLineHeightBy( item );
+				tmp += Editor.crx.CalculateNeedAddLineHeightBy( item );
 
 				if ( tmp > scroll )
 				{

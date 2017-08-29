@@ -41,8 +41,6 @@ exports.addItem = function ( item )
 {
 	var result = {};
 
-	result.fontsize = Editor.ConsoleEx.FontSize;
-
 	result.type = item.type;
 	var split = item.message.split( '\n' );
 	split = split.filter( ( item ) =>{ return item !== ""; } );
@@ -120,7 +118,7 @@ exports.update = function ()
 			item.translateY = offsetY;
 			renderCmds.push( item );
 
-			offsetY += Editor.ConsoleEx.CalculateNeedAddLineHeightBy( item );
+			offsetY += Editor.crx.CalculateNeedAddLineHeightBy( item );
 
 			// if ( item.fold )
 			// { offsetY += 30; }
@@ -135,11 +133,6 @@ exports.update = function ()
 
 exports.updateFontSize = function()
 {
-	_messages.forEach( (item) =>
-	{
-		item.fontsize = Editor.ConsoleEx.FontSize;
-	});
-
 	exports.update();
 };
 
