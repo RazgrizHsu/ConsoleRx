@@ -131,7 +131,7 @@ const uiTemplate =`
 		section .fa-caret-down,
 		section .fa-caret-right 
 		{
-		 	font-size:{{ fontsize+2 }}px!important; color:#EEE!important; line-height: {{ lineheight - 4 }}px!important;
+		 	font-size:{{ fontsize-2 }}px!important; color:#EEE!important; line-height: {{ lineheight - 4 }}px!important;
 			display: inherit;
 			width: 3px!important;
 			height: 3px!important;

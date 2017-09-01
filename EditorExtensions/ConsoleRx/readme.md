@@ -4,13 +4,14 @@
 because Raz always wanna more large view in console output,  
 so i made this Extension for CocosCreator, hope you enjoy the developing :)
 
-![Preview](imgs/01.png)
+![Preview](imgs/ConsoleRx.png)
 
 
 **Feature & change log**
 ------------------------------------
 - 1.1.2
   - fix when Panel dock to MainFrame the messages duplicate issue
+  - fix folding arrow size issue
 
 - 1.1.1
   - fix folding information wrong styles issue
