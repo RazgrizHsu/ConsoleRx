@@ -1,17 +1,18 @@
 'use strict';
 
 // 数据源，从外部获取 log 信息后，就直接存在这里
-var _messages	= exports.list = [];
+var __messages	= exports.list = [];
 
 // 显示数据，从数据源筛选出来的显示数据
 // 这个数据直接用于 vue 的数据绑定
 // 所以应该避免使用 array[i] = xxx 这样的用法
 // 只能够使用 pop() splice() push() 等方法，否则会破坏数据绑定
-var renderCmds = exports.renderCmds = null;
+var __RenderItems = exports.RenderItems = null;
 
-exports.setRenderCmds = function ( array )
+exports.SetRenderItemsBy = function ( array )
 {
-	renderCmds = exports.renderCmds = array;
+	__messages.length = 0;
+	__RenderItems = exports.RenderItems = array;
 };
 
 var collapse = true;
@@ -51,7 +52,7 @@ exports.addItem = function ( item )
 	result.num = 1;
 	// result.translateY = list.length * _lineHeight;
 
-	_messages.push( result );
+	__messages.push( result );
 	exports.update();
 };
 
@@ -61,7 +62,7 @@ exports.addItem = function ( item )
 exports.clear = function ()
 {
 	//while ( list.length > 0 ) { list.pop(); }
-	_messages.length = 0;
+	__messages.length = 0;
 	exports.update();
 };
 
@@ -71,14 +72,14 @@ var _updateLocker = false;
  */
 exports.update = function ()
 {
-	if ( _updateLocker || !renderCmds ) return;
+	if ( _updateLocker || !__RenderItems ) return;
 	_updateLocker = true;
 
 	let _updateMessages = () =>
 	{
 		_updateLocker = false;
 		var offsetY = 0;
-		while ( renderCmds.length > 0 ) { renderCmds.pop(); }
+		while ( __RenderItems.length > 0 ) { __RenderItems.pop(); }
 
 		var filter = filterText;
 		if ( filterRegex )
@@ -87,7 +88,7 @@ exports.update = function ()
 			catch ( error ) { filter = /.*/; }
 		}
 
-		var filtedMessages = _messages.filter( ( item ) =>
+		var filtedMessages = __messages.filter( ( item ) =>
 		{
 			// 过滤一遍 title 不存在的项目
 			if ( !item.title ) return false;
@@ -104,10 +105,11 @@ exports.update = function ()
 		} );
 
 
-		// 最后将过滤出来的 log 信息放入需要显示的 renderCmds 队列
+
+		// 最后将过滤出来的 log 信息放入需要显示的 RenderItems 队列
 		filtedMessages.forEach( ( item ) =>
 		{
-			var reference = renderCmds[renderCmds.length - 1];
+			var reference = __RenderItems[__RenderItems.length - 1];
 			// 根据 collapse 过滤一遍
 			if ( collapse && reference && item.title === reference.title && item.info === reference.info && item.type === reference.type )
 			{
@@ -116,14 +118,9 @@ exports.update = function ()
 			}
 			item.num = 1;
 			item.translateY = offsetY;
-			renderCmds.push( item );
+			__RenderItems.push( item );
 
 			offsetY += Editor.crx.CalculateNeedAddLineHeightBy( item );
-
-			// if ( item.fold )
-			// { offsetY += 30; }
-			// else
-			// { offsetY += item.rows * 26 + 14; }
 		} );
 	};
 

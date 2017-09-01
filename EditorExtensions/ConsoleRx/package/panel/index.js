@@ -64,7 +64,7 @@ const uiTemplate =`
 
 	<header>
 		<ui-button class="red small transparent" v-on:confirm="onClear"><i class="icon-block"></i></ui-button>
-		<ui-button id="openLogBtn" class="small transparent" v-on:click="onPopup"><i class="icon-doc-text"></i></ui-button>
+		<ui-button id="openLogBtn" class="small transparent" v-on:click="onPopupLogMenu"><i class="icon-doc-text"></i></ui-button>
 		<ui-input v-on:change="onFilterText"></ui-input>
 		<ui-checkbox v-on:confirm="onFilterRegex">Regex</ui-checkbox>
 		<ui-select v-on:confirm="onFilterType">
@@ -170,7 +170,7 @@ let _buildMethods = ( runtime ) =>
 	let methods =
 	{
 		onClear(){ Editor.Ipc.sendToMain( crx.keys.cmds.Clear, '^(?!.*?SyntaxError)', true ); },
-		onPopup()
+		onPopupLogMenu()
 		{
 			let rect = runtime.$openLogBtn.getBoundingClientRect();
 			Editor.Ipc.sendToPackage( crx.PackageName, 'popup-open-log-menu', rect.left, rect.bottom + 5 );
@@ -295,11 +295,15 @@ const _DefineOfPanel =
 
 		this._vm = new Vue( buildVue );
 
-		// 将显示的数组设置进Manager
-		// manager可以直接修改这个数组，更新数据
-		manager.setRenderCmds( this._vm.messages );
+
+		manager.SetRenderItemsBy( this._vm.messages );
 
 		Editor.Ipc.sendToMain( crx.keys.editor.ConsoleQuery, ( err, results ) =>{ manager.addItems( results ); } );
+
+
+	},
+	close()
+	{
 	},
 
 	clear()

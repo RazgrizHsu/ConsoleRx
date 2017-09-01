@@ -9,6 +9,9 @@ so i made this Extension for CocosCreator, hope you enjoy the developing :)
 
 **Feature & change log**
 ------------------------------------
+- 1.1.2
+  - fix when Panel dock to MainFrame the messages duplicate issue
+
 - 1.1.1
   - fix folding information wrong styles issue
   - add folding arrow highlight

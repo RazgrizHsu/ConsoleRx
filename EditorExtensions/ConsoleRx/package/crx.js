@@ -18,7 +18,10 @@ let crx =
 		},
 		editor:
 		{
-			ConsoleQuery:	'editor:console-query'
+			ConsoleQuery:	'editor:console-query',
+			PanelDock:		'editor:panel-dock',
+			PanelOpen:		'editor:panel-open',
+			PanelPopup:		'editor:panel-popup',
 		},
 	},
 
