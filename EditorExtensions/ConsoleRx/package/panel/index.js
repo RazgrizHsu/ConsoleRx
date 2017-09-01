@@ -282,11 +282,6 @@ const _DefineOfPanel =
 		manager.setRenderCmds( this._vm.messages );
 
 		Editor.Ipc.sendToMain( crx.keys.editor.ConsoleQuery, ( err, results ) =>{ manager.addItems( results ); } );
-
-		Editor.info( 'Test Warn Log' );
-		Editor.error( 'Test Error Log' );
-		Editor.warn( 'Test Warn Log' );
-		Editor.success( 'Test Success Log' );
 	},
 
 	clear()

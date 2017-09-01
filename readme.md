@@ -1,14 +1,27 @@
-# CocosCreator範例集
-----
-這個Repository主要拿來放置 [CocosCreator](http://www.cocos.com/download/creator/) 相關的東西  
+# CocosCreator Resources
+-------------------------------------------------- ------------
+This Repository is mainly used to place
+[CocosCreator](http://www.cocos.com/download/creator/) related resources
 
 
-### 代碼相關
---------------------------------------------------------------
+### Code Series
+-------------------------------------------------- ------------
 
+- [Components](./Components/readme.md)  
+  User Interface related controls
 
-### 教學相關
---------------------------------------------------------------
-1. [Prefab基礎教學](./Teach/Prefab/readme.md)  
-   在Creator裡使用Prefab的
-   
+  - [NodeDebugger](./Components/NodeDebugger/readme.md)  
+    An example of adding additional functionality to a Node,  
+    such as drawing a outline to transparent node in the Editor for Typography
+
+- [Editor Extensions](./EditorExtensions/readme.md)
+   Editor related extensions
+
+   - [ConsoleRx](./EditorExtensions/ConsoleRx/readme.md)
+     Let the console (Console) can customize styles,  
+     such setting font size and line height, and the output color of log
+
+### Teaching & Learning
+-------------------------------------------------- ------------
+1. [Prefab Basic] (./Teach/Prefab/readme.md)
+    Use Prefab's basic teaching in Creator

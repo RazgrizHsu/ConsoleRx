@@ -1,4 +1,4 @@
-![Logo](imgs/Icon.png)
+![Logo](imgs/icon.png)
 
 ------------------------------------
 because Raz always wanna more large view in console output,  
@@ -9,7 +9,10 @@ so i made this Extension for CocosCreator, hope you enjoy the developing :)
 
 **Feature & change log**
 ------------------------------------
+- 1.1.0
+  - add Feature for adjust log type colors
+
 - 1.0.0
-    - Adjust FontSize and LineHeight
-    - Choose you like Font-Family
+  - Adjust FontSize and LineHeight
+  - Choose you like Font-Family
 ------------------------------------
