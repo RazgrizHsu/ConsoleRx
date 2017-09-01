@@ -39,7 +39,7 @@ section div .text { position: relative; flex: 1; white-space: nowrap; text-overf
 section div[fold] .text { overflow: hidden; }
 section div .info { margin-left: 25px; }
 section div[fold] .info > div { display: none; }
-section div .info div { white-space: nowrap; text-overflow: ellipsis; line-height: 26px; font-size: 13px; }
+section div .info div { white-space: nowrap; text-overflow: ellipsis; }
 section div .info div pre { margin: 0; display: inline; }
 section div[fold] .info div { overflow: hidden; }
 section .item[type=error] .info div { color: #A73637; }
@@ -52,7 +52,8 @@ label { line-height:23px; font-size:9px; font-family:Monaco; }
 #consolerx input:focus { border: 1px solid #fd942b!important; }
 #consolerx input:hover { border: 1px solid #bababa; }
 #consolerx input:-webkit-input-placeholder { font-style: italic; color: #595959 }
-#consolerx .fa { font-size:18px; line-height:24px; margin:0px 5px 0px 6px; }
+#consolerx .fa { font-size:18px; line-height:28px; margin:0px 5px 0px 6px; }
+#consolerx select { padding:2px 18px 2px 5px!important; border:red 2px solid; }
 
 /* Change for UI Kit */
 ui-color { width:30px; }
@@ -109,16 +110,33 @@ const uiTemplate =`
 	
 	<style type="text/css">
 	
-		.text span		{ font-size: {{ fontsize }}px!important; font-family: {{ fontfamilies }}; }
-		section .item	{ line-height: {{ lineheight }}px!important; }
+		.text span,
+		.info span,
+		.info pre,
+		section .item,
+		section div .info div					{ font-size: {{ fontsize }}px!important; font-family: {{ fontfamilies }}; line-height: {{ lineheight }}px!important; }
 		
-		section .item[type=log]		{ color: {{ colors.log }}!important; }
-		section .item[type=error]	{ color: {{ colors.error }}!important; }
-		section .item[type=warn]	{ color: {{ colors.warn }}!important; }
-		section .item[type=info]	{ color: {{ colors.info }}!important; }
-		section .item[type=failed]	{ color: {{ colors.failed }}!important; }
-		section .item[type=success]	{ color: {{ colors.success }}!important; }
+		section .fa								{ font-size: {{ fontsize }}px!important; line-height: {{ lineheight }}px!important; }
 		
+		section .item[type=log]					{ color: {{ colors.log }}!important; }
+		section .item[type=error],
+		section .item[type=error] .info div		{ color: {{ colors.error }}!important; }
+		section .item[type=warn]				{ color: {{ colors.warn }}!important; }
+		section .item[type=info]				{ color: {{ colors.info }}!important; }
+		section .item[type=failed]				{ color: {{ colors.failed }}!important; }
+		section .item[type=success]				{ color: {{ colors.success }}!important; }
+		
+		
+		/*folding icon hiehlight*/
+		section .fa-caret-down,
+		section .fa-caret-right 
+		{
+		 	font-size:{{ fontsize+2 }}px!important; color:#EEE!important; line-height: {{ lineheight - 4 }}px!important;
+			display: inherit;
+			width: 3px!important;
+			height: 3px!important;
+			box-shadow: 0px 0px 3px rgba( 255, 255, 255, 1);
+    	}
 	</style>
 	
 	<consolerx-list v-bind:messages="messages"></consolerx-list>

@@ -1,6 +1,6 @@
 {
 	"name": "consolerx",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Custom Your Console Output Styles",
 	"author": "RazgrizHsu <fly@raz.tw>",
 	"main": "index.js",

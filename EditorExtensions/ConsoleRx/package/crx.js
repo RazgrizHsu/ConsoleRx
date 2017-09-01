@@ -63,12 +63,13 @@ crx.Runtime.UpdateProfileBy = function( key, value )
 
 crx.CalculateNeedAddLineHeightBy = function( item )
 {
-	return ( item.fold ) ? crx.Runtime.LineHeight : item.rows * 26 + 14;
+	//defaults LineHeight:30, rows:26
+	return ( item.fold ) ? crx.Runtime.LineHeight : item.rows * ( crx.Runtime.LineHeight ) + 14;
 	//cc.log( 'Editor: fontSize:' + this.data.fontsize );
 };
 crx.CalculateMultiLineHeightBy = function( source )
 {
-	return source.rows * 26 + 14 - crx.Runtime.LineHeight;
+	return source.rows * ( crx.Runtime.LineHeight ) + 14 - crx.Runtime.LineHeight;
 };
 
 
