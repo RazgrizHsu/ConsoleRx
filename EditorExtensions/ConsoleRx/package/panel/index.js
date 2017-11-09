@@ -1,13 +1,13 @@
 'use strict';
 const crx = require( Editor.url( 'packages://consolerx/crx' ) );
-const manager = require( Editor.url( 'packages://consolerx/panel/manager' ) );
+const manager = require( Editor.url( 'packages://consolerx/core/manager' ) );
 const components =
 {
 	List:			require( Editor.url( 'packages://consolerx/panel/components/list' ) ),
 	Item:			require( Editor.url( 'packages://consolerx/panel/components/item' ) ),
 };
 
-require( Editor.url( 'packages://consolerx/libs/string-format' ) ).extend( String.prototype );
+//require( Editor.url( 'packages://consolerx/libs/string-format' ) ).extend( String.prototype );
 
 const __defaultColors = `
 section .item[type=log]	{ color: #999; }
@@ -76,6 +76,8 @@ const uiTemplate =`
 			<option value="warn">Warn</option>
 			<option value="error">Error</option>
 		</ui-select>
+		
+		<ui-button id="openSettings" class="small transparent" v-on:click="onPopSettings" style="margin-left:10px"><i class="fa fa-cog"></i>Ignore Settings</ui-button>
 		
 		<ui-checkbox class="collapse" v-on:confirm="onCollapse" checked>Collapse</ui-checkbox>
 	</header>
@@ -175,6 +177,10 @@ let _buildMethods = ( runtime ) =>
 			let rect = runtime.$openLogBtn.getBoundingClientRect();
 			Editor.Ipc.sendToPackage( crx.PackageName, 'popup-open-log-menu', rect.left, rect.bottom + 5 );
 		},
+		onPopSettings()
+		{
+			Editor.Panel.open( 'consolerx-settings', crx.Runtime.IgnorePatterns );
+		},
 		onFilterType( event )		{ manager.setFilterType( event.target.value ); },
 		onCollapse( event )			{ manager.setCollapse( event.target.checked ); },
 		onFilterRegex( event )		{ manager.setFilterRegex( event.target.value ); },
@@ -200,13 +206,12 @@ let _buildMethods = ( runtime ) =>
 			let fonts = event.target.value
 
 			crx.Runtime.UpdateProfileBy( 'fontfamilies', fonts );
-			//manager.update();
 		},
 		onColorChanged: function ( event )
 		{
 			let picker	= event.target;
 			let hex		= crx.RgbaArrayToHexBy( picker.value );
-			console.info( 'OnUpdateColor: Id[{0}] Rgba[{1}]'.format( picker.id, hex ) );
+			console.info( `OnUpdateColor: Id[${ picker.id }] Rgba[${ hex }]` );
 
 			this.colors[picker.id] = hex;
 			crx.Runtime.UpdateProfileBy( 'colors', this.colors );
@@ -275,7 +280,23 @@ const _DefineOfPanel =
 			}
 
 			event.reply( null, undefined );
-		}
+		},
+		'update-ignore-patterns'( event, patterns )
+		{
+			//Editor.log( `[Panel] Received Update Ignore: ${ patterns }` );
+
+			crx.Runtime.UpdateProfileBy( 'IgnorePatterns', patterns );
+			manager.setIgnorePatternsBy( patterns );
+			//Editor.log( `update IgnorePatterns: ${ patterns }` );
+		},
+
+		'query-ip'( event )
+		{
+			if( event.reply )
+			{
+				event.reply( crx.Runtime.IgnorePatterns );
+			}
+		},
 	},
 	ready()
 	{
@@ -295,7 +316,7 @@ const _DefineOfPanel =
 
 		this._vm = new Vue( buildVue );
 
-
+		manager.setIgnorePatternsBy( crx.Runtime.IgnorePatterns );
 		manager.SetRenderItemsBy( this._vm.messages );
 
 		Editor.Ipc.sendToMain( crx.keys.editor.ConsoleQuery, ( err, results ) =>{ manager.addItems( results ); } );

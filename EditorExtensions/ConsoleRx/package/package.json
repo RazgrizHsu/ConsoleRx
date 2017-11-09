@@ -1,6 +1,6 @@
 {
 	"name": "consolerx",
-	"version": "1.1.2",
+	"version": "1.2.0",
 	"description": "Custom Your Console Output Styles",
 	"author": "RazgrizHsu <fly@raz.tw>",
 	"main": "index.js",
@@ -18,7 +18,7 @@
 		"main": "panel/index.js",
 		"popable": true,
 		"type": "dockable",
-		"title": "i18n:ConsoleRx",
+		"title": "ConsoleRx",
 		"icon": "icon.png",
 		"width": 600,
 		"height": 350,
@@ -28,25 +28,36 @@
 		{
 			"command+k": "clear",
 			"ctrl+k": "clear"
-		},
-		"profiles":
+		}
+	},
+	"panel-settings":
+	{
+		"main": "panel-settings/index.js",
+		"type": "fixed-size",
+		"popable": true,
+		"title": "ConsoleRx-Settings",
+		"icon": "icon.png",
+		"width": 500,
+		"height": 350
+	},
+	"profiles":
+	{
+		"project":
 		{
-			"project":
-			{
-				"fontsize": 11,
-				"lineheight": 26,
-				"fontfamilies": "Monaco",
+			"fontsize": 11,
+			"lineheight": 26,
+			"fontfamilies": "Monaco",
 
-				"colors":
-				{
-					"log":		"#999999",
-					"error":	"#DA2121",
-					"warn":		"#999900",
-					"info":		"#0099FF",
-					"failed":	"#DA2121",
-					"success":	"#009900"
-				}
-			}
+			"colors":
+			{
+				"log":		"#999999",
+				"error":	"#DA2121",
+				"warn":		"#999900",
+				"info":		"#0099FF",
+				"failed":	"#DA2121",
+				"success":	"#009900"
+			},
+			"IgnorePatterns": ""
 		}
 	}
 }

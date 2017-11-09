@@ -15,6 +15,8 @@ exports.SetRenderItemsBy = function ( array )
 	__RenderItems = exports.RenderItems = array;
 };
 
+let ignorePatterns = [];
+
 var collapse = true;
 var filterType = '';
 var filterText = '';
@@ -88,7 +90,7 @@ exports.update = function ()
 			catch ( error ) { filter = /.*/; }
 		}
 
-		var filtedMessages = __messages.filter( ( item ) =>
+		var messages = __messages.filter( ( item ) =>
 		{
 			// 过滤一遍 title 不存在的项目
 			if ( !item.title ) return false;
@@ -104,10 +106,20 @@ exports.update = function ()
 			}
 		} );
 
+		//IgnorePatterns
+		for( let idx = 0; idx < ignorePatterns.length; idx++ )
+		{
+			let ignoreRegExp = ignorePatterns[idx];
 
+			messages = messages.filter( (item) =>
+			{
+				return !ignoreRegExp.test( item.title );
+			});
+
+		}
 
 		// 最后将过滤出来的 log 信息放入需要显示的 RenderItems 队列
-		filtedMessages.forEach( ( item ) =>
+		messages.forEach( ( item ) =>
 		{
 			var reference = __RenderItems[__RenderItems.length - 1];
 			// 根据 collapse 过滤一遍
@@ -154,5 +166,30 @@ exports.setFilterText = function ( str )
 exports.setFilterRegex = function ( bool )
 {
 	filterRegex = !!bool;
+	exports.update();
+};
+
+exports.setIgnorePatternsBy = function( patterns )
+{
+	let regexps = [];
+	let strings = patterns.split( "\n" );
+
+	for( let idx = 0; idx < strings.length; idx++ )
+	{
+		let string = strings[idx];
+		if( !string || !string.length || string.startsWith( '//' ) ) continue;
+		try
+		{
+			let regexp = new RegExp( string );
+			regexps.push( regexp );
+		}
+		catch ( error )
+		{
+			console.error( `[Error] 字串(${ idx })[${ string }]不是有效的RegularExpress!` );
+		}
+	}
+
+	ignorePatterns = regexps;
+
 	exports.update();
 };

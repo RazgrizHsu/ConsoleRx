@@ -9,6 +9,9 @@ so i made this Extension for CocosCreator, hope you enjoy the developing :)
 
 **Feature & change log**
 ------------------------------------
+- 1.2.0
+  - add Feature for ignore pattern settings
+
 - 1.1.2
   - fix when Panel dock to MainFrame the messages duplicate issue
   - fix folding arrow size issue

@@ -13,8 +13,9 @@ let crx =
 		},
 		cmds:
 		{
-			Clear:				'consolerx:clear',
-			QueryLastErrorLog:	'consolerx:query-last-error-log',
+			Clear:					'consolerx:clear',
+			QueryLastErrorLog:		'consolerx:query-last-error-log',
+			UpdateIgnorePatterns:	'consolerx:update-ignore-patterns',
 		},
 		editor:
 		{
@@ -38,7 +39,8 @@ let crx =
 			info:	"#0099FF",
 			failed:	"#DA2121",
 			success:"#009900"
-		}
+		},
+		IgnorePatterns:	'',
 	}
 };
 
@@ -48,8 +50,9 @@ let crx =
 //================================================================================================================
 crx.Runtime =
 {
-	Profile:	null,
-	LineHeight:	crx.DefaultProfiles.lineheight,
+	Profile:		null,
+	LineHeight:		crx.DefaultProfiles.lineheight,
+	IgnorePatterns:	crx.DefaultProfiles.IgnorePatterns,
 };
 
 crx.Runtime.UpdateProfileBy = function( key, value )
@@ -157,8 +160,8 @@ crx.InitializeProfileBy = function( profile, data )
 	data.fontfamilies	= crx.GetValidStringBy( profile, 'fontfamilies',crx.DefaultProfiles.fontfamilies );
 	data.colors			= crx.GetValidColorsBy( profile );
 
-
-	Editor.crx.Runtime.LineHeight = data.lineheight;
+	crx.Runtime.LineHeight = data.lineheight;
+	crx.Runtime.IgnorePatterns = crx.GetValidStringBy( profile, 'IgnorePatterns',crx.DefaultProfiles.IgnorePatterns );
 };
 
 
