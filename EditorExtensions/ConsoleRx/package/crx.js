@@ -41,6 +41,7 @@ let crx =
 			success:"#009900"
 		},
 		IgnorePatterns:	'',
+		AutoClean: 		false,
 	}
 };
 
@@ -53,6 +54,7 @@ crx.Runtime =
 	Profile:		null,
 	LineHeight:		crx.DefaultProfiles.lineheight,
 	IgnorePatterns:	crx.DefaultProfiles.IgnorePatterns,
+	AutoClean:		crx.DefaultProfiles.AutoClean,
 };
 
 crx.Runtime.UpdateProfileBy = function( key, value )
@@ -60,6 +62,9 @@ crx.Runtime.UpdateProfileBy = function( key, value )
 	let profile = crx.Runtime.Profile;
 	if( !profile ) { Editor.error( 'Runtime Profile is Null!' ); return; }
 
+	//Editor.log( `[UpdateProfile] key[${ key }] value[${value}]` );
+
+	crx.Runtime[key] = value;
 	profile.data[key] = value;
 	profile.save();
 };
@@ -102,6 +107,18 @@ crx.OpenLogFileOptions =
 	},
 ];
 
+crx.GetValidBooleanBy = function( profile, key, defaultValue )
+{
+	let value = profile.data[key];
+	//Editor.log( `[boolean] read[${key}] type:${ typeof( value ) }` );
+	if( typeof( value ) !== 'boolean' )
+	{
+		value = defaultValue;
+		profile.data[key] = value;
+		profile.save();
+	}
+	return value;
+};
 crx.GetValidNumberBy = function( profile, key, defaultValue )
 {
 	let value = profile.data[key];
@@ -151,17 +168,20 @@ crx.GetValidColorsBy = function( profile )
 };
 
 
-crx.InitializeProfileBy = function( profile, data )
+crx.InitializeProfileBy = function( profile, data, targetRuntime = null )
 {
-	crx.Runtime.Profile = profile;
+	let runtime = targetRuntime || crx.Runtime;
+
+	runtime.Profile = profile;
 
 	data.fontsize		= crx.GetValidNumberBy( profile, 'fontsize',	crx.DefaultProfiles.fontsize );
 	data.lineheight		= crx.GetValidNumberBy( profile, 'lineheight',	crx.DefaultProfiles.lineheight );
 	data.fontfamilies	= crx.GetValidStringBy( profile, 'fontfamilies',crx.DefaultProfiles.fontfamilies );
 	data.colors			= crx.GetValidColorsBy( profile );
 
-	crx.Runtime.LineHeight = data.lineheight;
-	crx.Runtime.IgnorePatterns = crx.GetValidStringBy( profile, 'IgnorePatterns',crx.DefaultProfiles.IgnorePatterns );
+	runtime.LineHeight		= data.lineheight;
+	runtime.IgnorePatterns	= crx.GetValidStringBy( profile, 'IgnorePatterns',crx.DefaultProfiles.IgnorePatterns );
+	runtime.AutoClean		= crx.GetValidBooleanBy( profile, 'AutoClean',	crx.DefaultProfiles.AutoClean );
 };
 
 

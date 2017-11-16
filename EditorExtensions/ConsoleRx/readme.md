@@ -9,6 +9,9 @@ so i made this Extension for CocosCreator, hope you enjoy the developing :)
 
 **Feature & change log**
 ------------------------------------
+- 1.3.0
+  - add Feature for AutoClean log when PlayOnDevice
+
 - 1.2.0
   - add Feature for ignore pattern settings
 

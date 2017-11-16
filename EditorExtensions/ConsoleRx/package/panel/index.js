@@ -77,7 +77,9 @@ const uiTemplate =`
 			<option value="error">Error</option>
 		</ui-select>
 		
-		<ui-button id="openSettings" class="small transparent" v-on:click="onPopSettings" style="margin-left:10px"><i class="fa fa-cog"></i>Ignore Settings</ui-button>
+		&nbsp;
+		<ui-button id="openSettings" class="small transparent" v-on:click="onPopSettings"><i class="fa fa-cog"></i>Ignore Settings</ui-button>
+		<ui-checkbox id="cbxAutoClean" v-on:confirm="onAutoCleanChanged">AutoClean</ui-checkbox>
 		
 		<ui-checkbox class="collapse" v-on:confirm="onCollapse" checked>Collapse</ui-checkbox>
 	</header>
@@ -97,7 +99,7 @@ const uiTemplate =`
 		<i class="fa fa-font" title="Font Names ex: Arial,Tahoma"></i>
 		<input id="crx_FontFamilies" v-model="fontfamilies" v-on:change="onFontFamiliesChanged" style="width:130px" title="Font Names ex: Arial,Tahoma" />
 		
-		<i class="fa fa-cogs" style="margin-left:10px"></i>
+		<i class="fa fa-cogs" style="margin-left:10px" v-on:click="onCogsClicked"></i>
 		<div class="group">
 			<ui-color id="log" v-bind:value="colors.log" v-on:change="onColorChanged" title="Color of Log"></ui-color>
 			<ui-color id="error" v-bind:value="colors.error" v-on:change="onColorChanged" title="Color of Error"></ui-color>
@@ -165,13 +167,16 @@ for( let idx = 8; idx <= 20; idx++ ) { _data.SizesOfFont.push( idx ); }
 for( let idx = 18; idx <= 36; idx++ ) { _data.SizesOfLine.push( idx ); }
 
 
+let privateMethods =
+{
+	ClearLog(){ Editor.Ipc.sendToMain( crx.keys.cmds.Clear, '^(?!.*?SyntaxError)', true ); },
+};
+
 let _buildMethods = ( runtime ) =>
 {
-	//Editor.log( '[ConsoleRx] profile:' + JSON.stringify( profile.data ) );
-
 	let methods =
 	{
-		onClear(){ Editor.Ipc.sendToMain( crx.keys.cmds.Clear, '^(?!.*?SyntaxError)', true ); },
+		onClear(){ privateMethods.ClearLog(); },
 		onPopupLogMenu()
 		{
 			let rect = runtime.$openLogBtn.getBoundingClientRect();
@@ -179,7 +184,13 @@ let _buildMethods = ( runtime ) =>
 		},
 		onPopSettings()
 		{
+			crx.Runtime.IgnorePatterns = crx.GetValidStringBy( crx.Runtime.Profile, 'IgnorePatterns', crx.DefaultProfiles.IgnorePatterns );
 			Editor.Panel.open( 'consolerx-settings', crx.Runtime.IgnorePatterns );
+		},
+		onAutoCleanChanged( event )
+		{
+			let value	= event.target.value;
+			crx.Runtime.UpdateProfileBy( 'AutoClean', value );
 		},
 		onFilterType( event )		{ manager.setFilterType( event.target.value ); },
 		onCollapse( event )			{ manager.setCollapse( event.target.checked ); },
@@ -207,11 +218,20 @@ let _buildMethods = ( runtime ) =>
 
 			crx.Runtime.UpdateProfileBy( 'fontfamilies', fonts );
 		},
-		onColorChanged: function ( event )
+		onCogsClicked()
+		{
+			Editor.log( '[Editor] test log...' );
+			Editor.info( '[Editor] test log...' );
+			Editor.success( '[Editor] test log...' );
+			Editor.warn( '[Editor] test log...' );
+			Editor.error( '[Editor] test log...' );
+			Editor.failed( '[Editor] test log...' );
+		},
+		onColorChanged( event )
 		{
 			let picker	= event.target;
 			let hex		= crx.RgbaArrayToHexBy( picker.value );
-			console.info( `OnUpdateColor: Id[${ picker.id }] Rgba[${ hex }]` );
+			//console.info( `OnUpdateColor: Id[${ picker.id }] Rgba[${ hex }]` );
 
 			this.colors[picker.id] = hex;
 			crx.Runtime.UpdateProfileBy( 'colors', this.colors );
@@ -228,7 +248,7 @@ const _DefineOfPanel =
 	style: stylesheet,
 	template: uiTemplate,
 
-	$:{ consolerx: '#consolerx', openLogBtn:  '#openLogBtn' },
+	$:{ consolerx: '#consolerx', openLogBtn:  '#openLogBtn', cbxAutoClean: '#cbxAutoClean' },
 
 	listeners:
 	{
@@ -290,6 +310,11 @@ const _DefineOfPanel =
 			//Editor.log( `update IgnorePatterns: ${ patterns }` );
 		},
 
+		'scene:play-on-device'( event )
+		{
+			if( crx.Runtime.AutoClean ) privateMethods.ClearLog();
+		},
+
 		'query-ip'( event )
 		{
 			if( event.reply )
@@ -312,15 +337,17 @@ const _DefineOfPanel =
 		};
 
 		//Initialize crx profile and validate buildVue.data
-		crx.InitializeProfileBy( this.profiles.project, buildVue.data );
+		crx.InitializeProfileBy( this.profiles.project, buildVue.data, crx.Runtime );
 
 		this._vm = new Vue( buildVue );
+
+		//restore values
+		this.$cbxAutoClean.checked = crx.Runtime.AutoClean;
 
 		manager.setIgnorePatternsBy( crx.Runtime.IgnorePatterns );
 		manager.SetRenderItemsBy( this._vm.messages );
 
 		Editor.Ipc.sendToMain( crx.keys.editor.ConsoleQuery, ( err, results ) =>{ manager.addItems( results ); } );
-
 
 	},
 	close()

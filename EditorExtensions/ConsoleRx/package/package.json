@@ -1,6 +1,6 @@
 {
 	"name": "consolerx",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"description": "Custom Your Console Output Styles",
 	"author": "RazgrizHsu <fly@raz.tw>",
 	"main": "index.js",
@@ -44,20 +44,21 @@
 	{
 		"project":
 		{
-			"fontsize": 11,
-			"lineheight": 26,
-			"fontfamilies": "Monaco",
+			"fontsize":			11,
+			"lineheight":		26,
+			"fontfamilies": 	"Monaco",
 
 			"colors":
 			{
-				"log":		"#999999",
-				"error":	"#DA2121",
-				"warn":		"#999900",
-				"info":		"#0099FF",
-				"failed":	"#DA2121",
-				"success":	"#009900"
+				"log":			"#999999",
+				"error":		"#DA2121",
+				"warn":			"#999900",
+				"info":			"#0099FF",
+				"failed":		"#DA2121",
+				"success":		"#009900"
 			},
-			"IgnorePatterns": ""
+			"IgnorePatterns": 	"",
+			"AutoClean":		false
 		}
 	}
 }
