@@ -1,27 +1,38 @@
-# CocosCreator Resources
--------------------------------------------------- ------------
-This Repository is mainly used to place
-[CocosCreator](http://www.cocos.com/download/creator/) related resources
+![Logo](imgs/icon.png)
+
+------------------------------------
+Because I want more large console view,
+so I made this Extension for CocosCreator, hope you enjoy the developing :)
+
+![Preview](imgs/ConsoleRx.png)
 
 
-### Code Series
--------------------------------------------------- ------------
+**Feature & change log**
+------------------------------------
+- 1.3.2
+  - adjust UI and fix cc 2.0 text selection issue
 
-- [Components](./Components/readme.md)  
-  User Interface related controls
+- 1.3.1
+  - fix Creator 1.7 config place different error
 
-  - [NodeDebugger](./Components/NodeDebugger/readme.md)  
-    An example of adding additional functionality to a Node,  
-    such as drawing a outline to transparent node in the Editor for Typography
+- 1.3.0
+  - add Feature for AutoClean log when PlayOnDevice
 
-- [Editor Extensions](./EditorExtensions/readme.md)
-   Editor related extensions
+- 1.2.0
+  - add Feature for ignore pattern settings
 
-   - [ConsoleRx](./EditorExtensions/ConsoleRx/readme.md)
-     Let the console (Console) can customize styles,  
-     such setting font size and line height, and the output color of log
+- 1.1.2
+  - fix when Panel dock to MainFrame the messages duplicate issue
+  - fix folding arrow size issue
 
-### Teaching & Learning
--------------------------------------------------- ------------
-1. [Prefab Basic] (./Teach/Prefab/readme.md)
-    Use Prefab's basic teaching in Creator
+- 1.1.1
+  - fix folding information wrong styles issue
+  - add folding arrow highlight
+
+- 1.1.0
+  - add Feature for adjust log type colors
+
+- 1.0.0
+  - Adjust FontSize and LineHeight
+  - Choose you like Font-Family
+------------------------------------
