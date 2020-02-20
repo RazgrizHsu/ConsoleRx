@@ -1,4 +1,3 @@
-'use strict';
 const crx = require( Editor.url( 'packages://consolerx/crx' ) );
 const manager = require( Editor.url( 'packages://consolerx/core/manager' ) );
 const components =
@@ -6,8 +5,6 @@ const components =
 	List:	require( Editor.url( 'packages://consolerx/panel/components/list' ) ),
 	Item:	require( Editor.url( 'packages://consolerx/panel/components/item' ) ),
 };
-
-//require( Editor.url( 'packages://consolerx/libs/string-format' ) ).extend( String.prototype );
 
 const __defaultColors = `
 section .item[type=log]		{ color: #999999; }
@@ -68,9 +65,12 @@ const uiTemplate =`
 <div id="consolerx" class="fit">
 
 	<header>
+		<!--------------------------------------------------------------------------------------------------------------->
 		<ui-button class="red small transparent" v-on:confirm="onClear"><i class="icon-block"></i></ui-button>
 		<ui-button id="openLogBtn" class="small transparent" v-on:click="onPopupLogMenu"><i class="icon-doc-text"></i></ui-button>
-		<ui-input v-on:change="onFilterText"></ui-input>
+		&nbsp;
+		<label for="filterText">Search: </label>
+		<ui-input id="filterText" v-on:change="onFilterText"></ui-input>
 		<ui-checkbox v-on:confirm="onFilterRegex">Regex</ui-checkbox>
 		<ui-select v-on:confirm="onFilterType">
 			<option value="">All</option>
@@ -81,15 +81,14 @@ const uiTemplate =`
 			<option value="warn">Warn</option>
 			<option value="error">Error</option>
 		</ui-select>
-
 		&nbsp;
-		<ui-button id="openSettings" class="small transparent" v-on:click="onPopSettings"><i class="fa fa-cog"></i>Ignore Settings</ui-button>
+		<ui-button id="btnOpenSettings" class="small transparent" v-on:click="onPopSettings"><i class="fa fa-cog" style="padding-top:2px"></i><label>Ignore Settings</label></ui-button>
 		<ui-checkbox id="cbxAutoClean" v-on:confirm="onAutoCleanChanged">AutoClean</ui-checkbox>
 
 		<ui-checkbox class="collapse" v-on:confirm="onCollapse" checked>Collapse</ui-checkbox>
+		<!--------------------------------------------------------------------------------------------------------------->
 	</header>
 	<header>
-		<!--<i class="split">&lt;!&ndash;split line&ndash;&gt;</i>-->
 		<!--------------------------------------------------------------------------------------------------------------->
 		<i class="fa fa-text-width" title="Font Size"></i>
 		<ui-select id="crx_FontSize" v-on:confirm="onFontSizeChanged" v-value="fontsize" title="Font Size">
@@ -168,16 +167,11 @@ for( let idx = 6; idx <= 26; idx++ ) { _data.SizesOfFont.push( idx ); }
 for( let idx = 15; idx <= 38; idx++ ) { _data.SizesOfLine.push( idx ); }
 
 
-let privateMethods =
-{
-	ClearLog(){ Editor.Ipc.sendToMain( crx.keys.cmds.Clear, '^(?!.*?SyntaxError)', true ); },
-};
-
 let _buildMethods = ( runtime ) =>
 {
 	let methods =
 	{
-		onClear(){ privateMethods.ClearLog(); },
+		onClear(){ crx.Call.ClearLog(); },
 		onPopupLogMenu()
 		{
 			let rect = runtime.$openLogBtn.getBoundingClientRect();
@@ -201,14 +195,12 @@ let _buildMethods = ( runtime ) =>
 		{
 			let value	= event.target.value;
 			let size	=  parseInt( value );
-
 			crx.Runtime.UpdateProfileBy( 'fontsize',size );
 		},
 		onLineHeightChanged( event )
 		{
 			let value	= event.target.value;
 			let size	=  parseInt( value );
-
 			crx.Runtime.UpdateProfileBy( 'lineheight', size );
 			crx.Runtime.LineHeight = size;
 			manager.update();
@@ -216,7 +208,6 @@ let _buildMethods = ( runtime ) =>
 		onFontFamiliesChanged( event )
 		{
 			let fonts = event.target.value
-
 			crx.Runtime.UpdateProfileBy( 'fontfamilies', fonts );
 		},
 		onCogsClicked()
@@ -253,27 +244,25 @@ const _DefineOfPanel =
 
 	listeners:
 	{
-		'panel-resize'(){ manager.update(); },
-		'panel-show'()	{ manager.update(); }
+		'panel-resize'	(){ manager.update(); },
+		'panel-show'	(){ manager.update(); }
 	},
 	messages:
 	{
-		'editor:console-log'( event, message )		{ manager.addItem( { type: 'log', message: message } ); },
-		'editor:console-success'( event, message )	{ manager.addItem( { type: 'success', message: message } ); },
-		'editor:console-failed'( event, message )	{ manager.addItem( { type: 'failed', message: message } ); },
-		'editor:console-info'( event, message )		{ manager.addItem( { type: 'info', message: message } ); },
-		'editor:console-warn'( event, message )		{ manager.addItem( { type: 'warn', message: message } ); },
-		'editor:console-error'( event, message )	{ manager.addItem( { type: 'error', message: message } ); },
-		'editor:console-clear'( event, pattern, useRegex )
+		[ crx.keys.editor.ConsoleLog ]		( event, message ){ manager.addItem( { type: 'log',		message: message } ); },
+		[ crx.keys.editor.ConsoleSuccess ]	( event, message ){ manager.addItem( { type: 'success',	message: message } ); },
+		[ crx.keys.editor.ConsoleFailed ]	( event, message ){ manager.addItem( { type: 'failed',	message: message } ); },
+		[ crx.keys.editor.ConsoleInfo ]		( event, message ){ manager.addItem( { type: 'info',	message: message } ); },
+		[ crx.keys.editor.ConsoleWarn ]		( event, message ){ manager.addItem( { type: 'warn',	message: message } ); },
+		[ crx.keys.editor.ConsoleError ]	( event, message ){ manager.addItem( { type: 'error',	message: message } ); },
+
+		[ crx.keys.editor.ScenePlay ]( event ){ if( crx.Runtime.AutoClean ) crx.Call.ClearLog(); },
+		[ crx.keys.editor.ConsoleClear ]( event, pattern, useRegex )
 		{
 			if ( !pattern ) return manager.clear();
 
 			let filter;
-			if ( useRegex )
-			{
-				try { filter = new RegExp( pattern ); }
-				catch ( err ) { filter = new RegExp( '' ); }
-			}
+			if ( useRegex ) { try { filter = new RegExp( pattern ); } catch ( err ) { filter = new RegExp( '' ); } }
 			else filter = pattern;
 
 			for ( let i = manager.list.length - 1; i >= 0; i-- )
@@ -288,10 +277,9 @@ const _DefineOfPanel =
 			manager.update();
 		},
 
-		'consolerx:query-last-error-log'( event )
+		[ crx.keys.cmds.QueryLastErrorLog ]( event )
 		{
 			if ( !event.reply ) return;
-
 			let list = manager.list;
 			let index = list.length - 1;
 			while ( index >= 0 )
@@ -299,39 +287,26 @@ const _DefineOfPanel =
 				let item = list[index--];
 				if ( item.type === 'error' || item.type === 'failed' || item.type === 'warn' ) return event.reply( null, item );
 			}
-
 			event.reply( null, undefined );
 		},
-		'update-ignore-patterns'( event, patterns )
+		[ crx.keys.cmds.IgnorePatternsUpdate ]( event, patterns )
 		{
-			//Editor.log( `[Panel] Received Update Ignore: ${ patterns }` );
-
 			crx.Runtime.UpdateProfileBy( 'IgnorePatterns', patterns );
 			manager.setIgnorePatternsBy( patterns );
-			//Editor.log( `update IgnorePatterns: ${ patterns }` );
 		},
-
-		'scene:play-on-device'( event )
+		[ crx.keys.cmds.IgnorePatternsQuery ]( event )
 		{
-			if( crx.Runtime.AutoClean ) privateMethods.ClearLog();
-		},
-
-		'query-ip'( event )
-		{
-			if( event.reply )
-			{
-				event.reply( crx.Runtime.IgnorePatterns );
-			}
+			if( event.reply ) event.reply( crx.Runtime.IgnorePatterns );
 		},
 	},
 	ready()
 	{
 		let buildVue =
 		{
-			el:         this.$consolerx,
+			el: this.$consolerx,
 			components:
 			{
-				'consolerx-list':	components.List,
+				'consolerx-list': components.List,
 			},
 			data: _data,
 			methods: _buildMethods( this ),
@@ -348,19 +323,16 @@ const _DefineOfPanel =
 		manager.setIgnorePatternsBy( crx.Runtime.IgnorePatterns );
 		manager.SetRenderItemsBy( this._vm.messages );
 
-		Editor.Ipc.sendToMain( crx.keys.editor.ConsoleQuery, ( err, results ) =>{ manager.addItems( results ); } );
-
+		crx.Call.ConsoleQuery( ( logs ) => { manager.addItems( logs ) } )
 	},
 	close()
 	{
 	},
-
 	clear()
 	{
 		manager.clear();
-		Editor.Ipc.sendToMain( crx.keys.cmds.Clear );
+		crx.Call.ClearLog( true );
 	}
-
 };
 
 

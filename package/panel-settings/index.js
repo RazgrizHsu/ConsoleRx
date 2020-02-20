@@ -1,7 +1,6 @@
-'use strict';
+const crx = require( Editor.url( 'packages://consolerx/crx' ) );
+
 const urlOfIcon = Editor.url( 'packages://consolerx/icon.png' );
-
-
 const stylesheet = `
 @import url('app://node_modules/font-awesome/css/font-awesome.min.css');
 
@@ -38,8 +37,8 @@ const uiTemplate =`
 <div id="settings">
 	<div class="group">
 		<h3>Ignore Pattern</h3>
-		<ui-text-area id="txarea" rows="6" placeholder="Ignore Pattern"></ui-text-area>
-		<!--<textarea id="txarea" rows="9" placeholder="Ignore Pattern"></textarea>-->
+		<!--<ui-text-area id="txarea" rows="6" placeholder="Ignore Pattern"></ui-text-area>-->
+		<textarea id="txarea" placeholder="Ignore Pattern"></textarea>
 	</div>
 	<div>
 		<ul>
@@ -66,22 +65,11 @@ let _buildMethods = ( runtime ) =>
 		onIgnorePatternsChanged( event )
 		{
 			let patterns = runtime.$txarea.value;
-			Editor.Ipc.sendToPanel( 'consolerx', 'update-ignore-patterns', patterns );
-		},
-		handleKey( event )
-		{
-			let code = event.keyCode;
-			Editor.info( `handleKey Code[${ code }]` )
-			if( code == 38 || code == 40 )
-			{
-				event.stopPropagation()
-			}
+			crx.Call.IgnorePatternsUpdateBy( patterns );
 		}
 	};
 	return funcs;
 }
-
-
 
 
 const _DefineOfPanel =
@@ -96,8 +84,6 @@ const _DefineOfPanel =
 
 	listeners:
 	{
-		//'panel-resize'()	{ manager.update(); },
-		//'panel-show'()	{ manager.update(); }
 	},
 	messages:
 	{
@@ -118,21 +104,15 @@ const _DefineOfPanel =
 			methods: _buildMethods( root ),
 		};
 
-		var old_element = root.$txarea;
-		var new_element = old_element.cloneNode(true);
-		old_element.parentNode.replaceChild(new_element, old_element);
-
-		Editor.Ipc.sendToPanel( 'consolerx', 'query-ip', null, function( ignorePatterns )
+		crx.Call.IgnorePatternsQueryBy( (patterns) =>
 		{
-			root.$txarea.value = ignorePatterns;
+			root.$txarea.value = patterns;
 			root._vm = new Vue( _Vue );
-		});
+		} );
 	},
 	close()
 	{
 	}
 };
-
-
 
 Editor.Panel.extend( _DefineOfPanel );

@@ -15,14 +15,26 @@ let crx =
 		{
 			Clear:					'consolerx:clear',
 			QueryLastErrorLog:		'consolerx:query-last-error-log',
-			UpdateIgnorePatterns:	'consolerx:update-ignore-patterns',
+			IgnorePatternsUpdate:	'consolerx:ignore-patterns-update',
+			IgnorePatternsQuery:	'consolerx:ignore-patterns-query',
 		},
 		editor:
 		{
-			ConsoleQuery:	'editor:console-query',
+			ScenePlay:		'scene:play-on-device',
+
 			PanelDock:		'editor:panel-dock',
 			PanelOpen:		'editor:panel-open',
 			PanelPopup:		'editor:panel-popup',
+
+			ConsoleQuery:		'editor:console-query',
+			ConsoleClear:		'editor:console-clear',
+
+			ConsoleLog:			'editor:console-log',
+			ConsoleSuccess:		'editor:console-success',
+			ConsoleFailed:		'editor:console-failed',
+			ConsoleInfo:		'editor:console-info',
+			ConsoleWarn:		'editor:console-warn',
+			ConsoleError:		'editor:console-error',
 		},
 	},
 
@@ -68,6 +80,43 @@ crx.Runtime.UpdateProfileBy = function( key, value )
 	profile.data[key] = value;
 	profile.save();
 };
+
+
+//================================================================================================================
+// Call
+//================================================================================================================
+crx.Call =
+{
+	ClearLog( cleanAll = false )
+	{
+		if( !cleanAll )
+			Editor.Ipc.sendToMain( crx.keys.cmds.Clear, '^(?!.*?SyntaxError)', true );
+		else
+			Editor.Ipc.sendToMain( crx.keys.cmds.Clear );
+	},
+
+	ConsoleQuery( onGetLogs )
+	{
+		Editor.Ipc.sendToMain( crx.keys.editor.ConsoleQuery, ( ex, results ) =>
+		{
+			if( ex ){ Editor.error( `[ConsoleRx] query log ex[${ ex }]` ); return; }
+			onGetLogs( results );
+		} );
+	},
+
+	IgnorePatternsQueryBy( onSuccess )
+	{
+		Editor.Ipc.sendToPanel( crx.PackageName, crx.keys.cmds.IgnorePatternsQuery, null, onSuccess )
+	},
+	IgnorePatternsUpdateBy( patterns )
+	{
+		Editor.Ipc.sendToPanel( crx.PackageName, crx.keys.cmds.IgnorePatternsUpdate, patterns );
+	},
+
+};
+
+
+
 
 
 //================================================================================================================
