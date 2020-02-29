@@ -1,8 +1,8 @@
 // storage all messages
-const __messages	= exports.list = [];
+let __messages	= exports.list = [];
 
 // for Vue Binding
-const __RenderItems = exports.RenderItems = null;
+let __RenderItems = exports.RenderItems = null;
 
 exports.SetRenderItemsBy = function ( array )
 {

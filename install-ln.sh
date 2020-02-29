@@ -1,2 +1,5 @@
+Path=~/.CocosCreator/packages/ConsoleRx
+
 mkdir -p ~/.CocosCreator/packages
-ln -s $(pwd)/package ~/.CocosCreator/packages/ConsoleRx
+[ -d "$Path" ] && rm -rf "$Path";
+ln -s $(pwd)/package $Path
