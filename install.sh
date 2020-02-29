@@ -1,2 +1,3 @@
 mkdir -p ~/.CocosCreator/packages
-ln -s $(pwd)/package ~/.CocosCreator/packages/ConsoleRx
+rm -rf ~/.CocosCreator/packages/ConsoleRx
+git https://github.com/RazgrizHsu/ConsoleRx.git ~/.CocosCreator/packages/ConsoleRx
