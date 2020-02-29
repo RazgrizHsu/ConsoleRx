@@ -7,9 +7,12 @@ so I made this Extension for CocosCreator, hope you enjoy the developing :)
 ![Preview](imgs/ConsoleRx.png)
 
 
-##install
+## Install from Git
 execute on Terminal
-`bash <(curl -s https://raw.githubusercontent.com/RazgrizHsu/ConsoleRx/master/install.sh)`
+```
+bash <(curl -s https://raw.githubusercontent.com/RazgrizHsu/ConsoleRx/master/install.sh)
+```
+
 
 
 **Feature & change log**
